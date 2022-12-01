@@ -12,14 +12,14 @@ timestamp() {
 # capture stdout from nc
 parse_packet() {
     read -p packet
-    echo "[$(timestamp)] client: $packet" | tee log.txt
+    echo "[$(timestamp)] client: $packet" | tee -a log.txt
 }
 
 # send to nc stdin
 send_response() {
     response="[re: $packet] PONG"
     print -p $response
-    echo "[$(timestamp)] server: $response" | tee log.txt
+    echo "[$(timestamp)] server: $response" | tee -a log.txt
 }
 
 # kills server process
