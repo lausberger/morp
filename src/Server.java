@@ -4,6 +4,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Scanner;
 
+import javax.print.event.PrintEvent;
+
 public class Server {
 
   public static StringBuilder data(byte[] a) {
@@ -43,6 +45,14 @@ public class Server {
       // debug
       InetAddress ip = packet.getAddress();
       int port = packet.getPort();
+
+      // allow server to respond manually
+      if (scanner.hasNextLine()) {
+        String input = scanner.nextLine();
+        response = input.getBytes();
+      } else {
+        System.out.println("Nothing to send");
+      }
       packet = new DatagramPacket(response, response.length, ip, port);
       socket.send(packet);
 

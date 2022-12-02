@@ -30,13 +30,15 @@ public class Client {
     byte[] receive = new byte[65535];
 
     while (true) {
-      String input = scanner.nextLine();
-      buffer = input.getBytes();
+      if (scanner.hasNextLine()) {
+        String input = scanner.nextLine();
+        buffer = input.getBytes();
 
-      DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ip, 3390);
-      socket.send(packet);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ip, 3390);
+        socket.send(packet);
       
-      if (input.equals("END")) break;
+        if (input.equals("END")) break;
+      } 
 
       if (data(receive).toString().equals("END")) {
         System.out.println("Received END from server. Exiting");
