@@ -13,7 +13,7 @@ namespace MorpNet
     // TODO: consider constructor for int
     public Packet()
     {
-      readableBuffer = new byte[];
+      writableBuffer = new List<byte>();
       readPos = 0;
     }
 
@@ -59,6 +59,7 @@ namespace MorpNet
         {
           readPos += _numBytes;
         }
+        return _data;
       }
       else
       {
@@ -73,7 +74,7 @@ namespace MorpNet
         int _data = BitConverter.ToInt32(readableBuffer, readPos);
         if (_incrementReadPos)
         {
-          readPos += _incrementReadPos;
+          readPos += 4; // length of int
         }
         return _data;
       }
