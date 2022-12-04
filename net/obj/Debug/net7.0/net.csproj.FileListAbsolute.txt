@@ -1,0 +1,15 @@
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.csproj.AssemblyReference.cache
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.GeneratedMSBuildEditorConfig.editorconfig
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.AssemblyInfoInputs.cache
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.AssemblyInfo.cs
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.csproj.CoreCompileInputs.cache
+/Users/lucas/repos/morp/net/bin/Debug/net7.0/net
+/Users/lucas/repos/morp/net/bin/Debug/net7.0/net.deps.json
+/Users/lucas/repos/morp/net/bin/Debug/net7.0/net.runtimeconfig.json
+/Users/lucas/repos/morp/net/bin/Debug/net7.0/net.dll
+/Users/lucas/repos/morp/net/bin/Debug/net7.0/net.pdb
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.dll
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/refint/net.dll
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.pdb
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/net.genruntimeconfig.cache
+/Users/lucas/repos/morp/net/obj/Debug/net7.0/ref/net.dll
