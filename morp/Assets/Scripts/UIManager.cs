@@ -6,27 +6,27 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager instance;
-    public GameObject startMenu;
-    public TMP_InputField usernameField;
+  public static UIManager instance;
+  public GameObject startMenu;
+  public TMP_InputField usernameField;
 
-    public void Awake()
+  public void Awake()
+  {
+    if (instance == null)
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Debug.Log("UIManager instance already exists. Destroying.");
-            Destroy(this);
-        }
+      instance = this;
     }
+    else if (instance != this)
+    {
+      Debug.Log("UIManager instance already exists. Destroying.");
+      Destroy(this);
+    }
+  }
 
-    public void ConnectToServer()
-    {
-        startMenu.SetActive(false);
-        usernameField.interactable = false;
-        Client.instance.ConnectToServer();
-    }
+  public void ConnectToServer()
+  {
+    startMenu.SetActive(false);
+    usernameField.interactable = false;
+    Client.instance.ConnectToServer();
+  }
 }

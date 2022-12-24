@@ -28,7 +28,7 @@ namespace MorpNet
     public void SetBytes(byte[] _data)
     {
       WriteToBuffer(_data);
-      readableBuffer = writableBuffer.ToArray(); 
+      readableBuffer = writableBuffer.ToArray();
     }
 
     // TODO: add definition that takes other data types
@@ -52,36 +52,30 @@ namespace MorpNet
     // TODO: definitions for other types
     public byte[] ReadBytes(int _numBytes, bool _incrementReadPos = true)
     {
-      if (writableBuffer.Count > readPos)
-      {
-        byte[] _data = writableBuffer.GetRange(readPos, _numBytes).ToArray();
-        if (_incrementReadPos)
-        {
-          readPos += _numBytes;
-        }
-        return _data;
-      }
-      else
+      if (readPos > writableBuffer.Count)
       {
         throw new Exception("Read position exceeds buffer length!");
       }
+      byte[] _data = writableBuffer.GetRange(readPos, _numBytes).ToArray();
+      if (_incrementReadPos)
+      {
+        readPos += _numBytes;
+      }
+      return _data;
     }
 
     public int ReadInt(bool _incrementReadPos = true)
     {
-      if (writableBuffer.Count > readPos)
-      {
-        int _data = BitConverter.ToInt32(readableBuffer, readPos);
-        if (_incrementReadPos)
-        {
-          readPos += 4; // length of int
-        }
-        return _data;
-      }
-      else
+      if (readPos > writableBuffer.Count)
       {
         throw new Exception("Read position exceeds buffer length!");
       }
+      int _data = BitConverter.ToInt32(readableBuffer, readPos);
+      if (_incrementReadPos)
+      {
+        readPos += 4; // length of int
+      }
+      return _data;
     }
 
     public int UnreadLength()

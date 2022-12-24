@@ -1,5 +1,5 @@
 # MORP: Multiplayer Online Role Playing (Game)
-Like an MMO without the M...
+Like an MMO without the M
 
 ## Table of Contents
 * [Quick Start](#quick-start)

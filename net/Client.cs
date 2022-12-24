@@ -24,6 +24,7 @@ namespace MorpNet
       private readonly int id;
       private NetworkStream stream;
       private byte[] receiveBuffer;
+      
       public TCP(int _id)
       {
         id = _id;
