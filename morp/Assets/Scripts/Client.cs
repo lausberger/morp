@@ -47,8 +47,8 @@ public class Client : MonoBehaviour
 		{
 			socket = new TcpClient
 			{
-					ReceiveBufferSize = dataBufferSize,
-					SendBufferSize = dataBufferSize
+				ReceiveBufferSize = dataBufferSize,
+				SendBufferSize = dataBufferSize
 			};
 			receiveBuffer = new byte[dataBufferSize];
 			socket.BeginConnect(instance.ip, instance.port, ConnectCallback, socket);
@@ -61,6 +61,7 @@ public class Client : MonoBehaviour
 			{
 				return;
 			}
+
 			stream = socket.GetStream();
 			stream.BeginRead(receiveBuffer, dataBufferSize, 0, ReceiveCallback, null);
 		}
@@ -75,8 +76,10 @@ public class Client : MonoBehaviour
 					// TODO: disconnect
 					return;
 				}
+
 				byte[] _data = new byte[_byteLength];
 				Array.Copy(receiveBuffer, _data, _byteLength);
+
 				// TODO: handle data
 				stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 			}

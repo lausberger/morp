@@ -56,6 +56,7 @@ namespace MorpNet
       {
         throw new Exception("Read position exceeds buffer length!");
       }
+      
       byte[] _data = writableBuffer.GetRange(readPos, _numBytes).ToArray();
       if (_incrementReadPos)
       {
@@ -70,6 +71,7 @@ namespace MorpNet
       {
         throw new Exception("Read position exceeds buffer length!");
       }
+      
       int _data = BitConverter.ToInt32(readableBuffer, readPos);
       if (_incrementReadPos)
       {
