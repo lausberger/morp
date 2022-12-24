@@ -37,16 +37,17 @@ namespace MorpNet
       writableBuffer.AddRange(_data);
     }
 
+    // append a string size and a string to the payload
     public void WriteToBuffer(string _data)
     {
-      WriteLengthIndicator(_data.Length);
+      WriteToBuffer(_data.Length);
       writableBuffer.AddRange(Encoding.ASCII.GetBytes(_data));
     }
 
-    // indicates how long the next set of data is
-    public void WriteLengthIndicator(int _length)
+    // inserts the size of the payload to the start of the packet
+    public void WriteLengthIndicator()
     {
-      writableBuffer.AddRange(BitConverter.GetBytes(_length));
+      writableBuffer.InsertRange(0, BitConverter.GetBytes(writableBuffer.Count));
     }
 
     // TODO: definitions for other types
@@ -56,7 +57,7 @@ namespace MorpNet
       {
         throw new Exception("Read position exceeds buffer length!");
       }
-      
+
       byte[] _data = writableBuffer.GetRange(readPos, _numBytes).ToArray();
       if (_incrementReadPos)
       {
