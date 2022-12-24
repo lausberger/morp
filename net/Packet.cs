@@ -31,10 +31,14 @@ namespace MorpNet
       readableBuffer = writableBuffer.ToArray();
     }
 
-    // TODO: add definition that takes other data types
     public void WriteToBuffer(byte[] _data)
     {
       writableBuffer.AddRange(_data);
+    }
+        
+    public void WriteToBuffer(int _data)
+    {
+      writableBuffer.AddRange(BitConverter.GetBytes(_data));
     }
 
     // append a string size and a string to the payload
@@ -53,10 +57,7 @@ namespace MorpNet
     // TODO: definitions for other types
     public byte[] ReadBytes(int _numBytes, bool _incrementReadPos = true)
     {
-      if (readPos > writableBuffer.Count)
-      {
-        throw new Exception("Read position exceeds buffer length!");
-      }
+      AssertValidRead();
 
       byte[] _data = writableBuffer.GetRange(readPos, _numBytes).ToArray();
       if (_incrementReadPos)
@@ -68,10 +69,7 @@ namespace MorpNet
 
     public int ReadInt(bool _incrementReadPos = true)
     {
-      if (readPos > writableBuffer.Count)
-      {
-        throw new Exception("Read position exceeds buffer length!");
-      }
+      AssertValidRead();
       
       int _data = BitConverter.ToInt32(readableBuffer, readPos);
       if (_incrementReadPos)
@@ -79,6 +77,27 @@ namespace MorpNet
         readPos += 4; // length of int
       }
       return _data;
+    }
+
+    public string ReadString(bool _incrementReadPos = true)
+    {
+      AssertValidRead();
+
+      int _length = ReadInt();
+      string _data = Encoding.ASCII.GetString(readableBuffer, readPos, _length);
+      if (_incrementReadPos && _data.Length > 0)
+      {
+        readPos += _length;
+      }
+      return _data;
+    }
+
+    public static void AssertValidRead()
+    {
+      if (readPos > writableBuffer.Count)
+      {
+        throw new Exception("Read position exceeds buffer length");
+      }
     }
 
     public int UnreadLength()

@@ -26,7 +26,7 @@ namespace MorpNet
     private static async void BroadcastTCPData(Packet _packet, int _excludedClient = null)
     {
       _packet.WriteLengthIndicator();
-      for (int i=1; i<Server.MaxPlayers; i++)
+      for (int i = 1; i < Server.MaxPlayers; i++)
       {
         if (i != _excludedClient)
         {
