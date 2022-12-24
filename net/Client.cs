@@ -41,6 +41,23 @@ namespace MorpNet
         receiveBuffer = new byte[dataBufferSize];
 
         stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
+
+        ServerMessage.Welcome(id, "Welcome to MorpNet!");
+      }
+
+      public void SendPacket(Packet _packet)
+      {
+        try
+        {
+          if (socket != null)
+          {
+            stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+          }
+        }
+        catch (Exception _e)
+        {
+          Console.WriteLine($"Error sending packet to player {id} via TCP: {_e}");
+        }
       }
 
       private void ReceiveCallback(IAsyncResult _result)
