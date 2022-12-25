@@ -21,8 +21,10 @@ namespace MorpNet
     public class TCP
     {
       public TcpClient socket;
+
       private readonly int id;
       private NetworkStream stream;
+      private Packet receivedPacket;
       private byte[] receiveBuffer;
       
       public TCP(int _id)
@@ -38,6 +40,7 @@ namespace MorpNet
 
         stream = socket.GetStream();
 
+        receivedPacket = new Packet();
         receiveBuffer = new byte[dataBufferSize];
 
         stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
@@ -74,13 +77,58 @@ namespace MorpNet
           byte[] _data = new byte[_byteLength];
           Array.Copy(receiveBuffer, _data, _byteLength);
 
-          // TODO: handle data
+          receivedPacket.ResetBuffer(HandleData(_data));
           stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
         }
         catch (Exception _e)
         {
           Console.WriteLine($"Error receiving TCP data: {_e}");
         }
+      }
+
+      private bool HandleData(byte[] _data)
+      {
+        int _packetLength = 0;
+
+        receivedPacket.SetBytes(_data);
+        if (receivedPacket.UnreadLength() >= 4)
+        {
+          _packetLength = receivedPacket.ReadInt();
+          if (_packetLength <= 0)
+          {
+            return true;
+          }
+        }
+
+        while (_packetLength > 0 && _packetLength <= receivedPacket.UnreadLength())
+        {
+          byte[] _packetBytes = receivedPacket.ReadBytes(_packetLength);
+          ThreadManager.ExecuteOnMainThread(() =>
+          {
+            using (Packet _packet = new Packet(_packetBytes))
+            {
+              int _packetId = _packet.ReadInt();
+              Server.packetHandlers[_packetId](id, _packet);
+            }
+          });
+
+          _packetLength = 0;
+          if (receivedPacket.UnreadLength() >= 4)
+          {
+            _packetLength = receivedPacket.ReadInt();
+            if (_packetLength <= 0)
+            {
+              return true;
+            }
+          }
+        }
+
+        if (_packetLength <= 1)
+        {
+          return true;
+        }
+
+        return false;
       }
     }
   }

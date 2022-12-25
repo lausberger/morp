@@ -11,6 +11,9 @@ namespace MorpNet
     public static int MaxPlayers { get; private set; }
     public static int Port { get; private set; }
     public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
+    public delegate void PacketHandler(int _client, Packet _packet);
+    public static Dictionary<int, PacketHandler> packetHandlers;
+
     private static TcpListener tcpListener;
 
     public static void Start(int _maxPlayers, int _port)
@@ -23,12 +26,12 @@ namespace MorpNet
 
       tcpListener = new TcpListener(IPAddress.Any, Port);
       tcpListener.Start();
-      tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+      tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
 
       Console.WriteLine($"MorpNet server started on port {Port}.");
     }
 
-    private static async void TCPConnectCallback(IAsyncResult _result)
+    private static void TCPConnectCallback(IAsyncResult _result)
     {
       TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
       tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
@@ -53,6 +56,12 @@ namespace MorpNet
       {
         clients.Add(i, new Client(i));
       }
+
+      packetHandlers = new Dictionary<int, PacketHandler>()
+      {
+        { (int)1, ServerHandle.WelcomeReceived }
+      };
+      Console.WriteLine("Initialized server packet handlers.");
     }
   }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MorpNet
@@ -17,6 +18,14 @@ namespace MorpNet
       readPos = 0;
     }
 
+    public Packet(int _id)
+    {
+      writableBuffer = new List<byte>();
+      readPos = 0;
+
+      WriteToBuffer(_id);
+    }
+
     public Packet(byte[] _data)
     {
       writableBuffer = new List<byte>();
@@ -29,6 +38,11 @@ namespace MorpNet
     {
       WriteToBuffer(_data);
       readableBuffer = writableBuffer.ToArray();
+    }
+
+    public void InsertInt(int _value)
+    {
+      writableBuffer.InsertRange(0, BitConverter.GetBytes(_value));
     }
 
     public void WriteToBuffer(byte[] _data)
@@ -49,7 +63,7 @@ namespace MorpNet
     }
 
     // inserts the size of the payload to the start of the packet
-    public void WriteLengthIndicator()
+    public void InsertLengthIndicator()
     {
       writableBuffer.InsertRange(0, BitConverter.GetBytes(writableBuffer.Count));
     }
@@ -79,6 +93,7 @@ namespace MorpNet
       return _data;
     }
 
+    // possibly need a try-catch
     public string ReadString(bool _incrementReadPos = true)
     {
       AssertValidRead();
@@ -92,7 +107,7 @@ namespace MorpNet
       return _data;
     }
 
-    public static void AssertValidRead()
+    public void AssertValidRead()
     {
       if (readPos > writableBuffer.Count)
       {
@@ -102,7 +117,18 @@ namespace MorpNet
 
     public int UnreadLength()
     {
-      return writableBuffer.Count - readPos;
+      return Length() - readPos;
+    }
+
+    public byte[] ToArray()
+    {
+      readableBuffer = writableBuffer.ToArray();
+      return readableBuffer;
+    }
+
+    public int Length()
+    {
+      return writableBuffer.Count;
     }
 
     public void ResetBuffer(bool _fullReset = true)

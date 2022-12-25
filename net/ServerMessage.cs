@@ -19,13 +19,13 @@ namespace MorpNet
 
     private static void SendTCPData(int _client, Packet _packet)
     {
-      _packet.WriteLengthIndicator();
+      _packet.InsertLengthIndicator();
       Server.clients[_client].tcp.SendPacket(_packet);
     }
 
-    private static async void BroadcastTCPData(Packet _packet, int _excludedClient = null)
+    private static async void BroadcastTCPData(Packet _packet, int? _excludedClient = null)
     {
-      _packet.WriteLengthIndicator();
+      _packet.InsertLengthIndicator();
       for (int i = 1; i < Server.MaxPlayers; i++)
       {
         if (i != _excludedClient)
