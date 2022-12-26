@@ -7,7 +7,7 @@ namespace MorpNet
   {
     private static bool running = false;
 
-    private static void Main(string[] args)
+    static void Main(string[] args)
     {
       Console.Title = "MorpNet Server";
       running = true;
@@ -28,7 +28,9 @@ namespace MorpNet
         while (_nextLoop < DateTime.Now);
         {
           GameLogic.Update();
+          
           _nextLoop = _nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
+
           if (_nextLoop > DateTime.Now)
           {
             Thread.Sleep(_nextLoop - DateTime.Now);

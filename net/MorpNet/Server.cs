@@ -34,7 +34,7 @@ namespace MorpNet
     private static void TCPConnectCallback(IAsyncResult _result)
     {
       TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
-      tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+      tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
 
       Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}");
 
@@ -50,7 +50,7 @@ namespace MorpNet
       Console.WriteLine($"{_client.Client.RemoteEndPoint} failed to connect: Server is full.");
     }
 
-    private static async void InitializeServerData()
+    private static void InitializeServerData()
     {
       for (int i = 1; i <= MaxPlayers; i++)
       {
@@ -59,7 +59,7 @@ namespace MorpNet
 
       packetHandlers = new Dictionary<int, PacketHandler>()
       {
-        { (int)1, ServerHandle.WelcomeReceived }
+        { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived }
       };
       Console.WriteLine("Initialized server packet handlers.");
     }

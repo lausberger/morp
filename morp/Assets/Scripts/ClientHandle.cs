@@ -6,12 +6,11 @@ public class ClientHandle : MonoBehaviour
 {
   public static void Welcome(Packet _packet)
   {
-    int _id = _packet.ReadInt();
     string _message = _packet.ReadString();
+    int _id = _packet.ReadInt();
 
     Debug.Log($"Received message from server: {_message}");
     Client.instance.myId = _id;
-    // respond to welcome here
     ClientMessage.WelcomeReceived();
   }
 }

@@ -6,17 +6,6 @@ namespace MorpNet
 {
   class ServerMessage
   {
-    public static void Welcome(int _client, string _message)
-    {
-      using (Packet _packet = new Packet((int)1))
-      {
-        _packet.WriteToBuffer(_client);
-        _packet.WriteToBuffer(_message);
-
-        SendTCPData(_client, _packet);
-      }
-    }
-
     private static void SendTCPData(int _client, Packet _packet)
     {
       _packet.InsertLengthIndicator();
@@ -32,6 +21,17 @@ namespace MorpNet
         {
           Server.clients[i].tcp.SendPacket(_packet);
         }
+      }
+    }
+
+    public static void Welcome(int _client, string _message)
+    {
+      using (Packet _packet = new Packet((int)ServerPackets.welcome))
+      {
+        _packet.WriteToBuffer(_message);
+        _packet.WriteToBuffer(_client);
+
+        SendTCPData(_client, _packet);
       }
     }
   }

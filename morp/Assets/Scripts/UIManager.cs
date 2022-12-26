@@ -7,6 +7,7 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
   public static UIManager instance;
+
   public GameObject startMenu;
   public TMP_InputField usernameField;
 

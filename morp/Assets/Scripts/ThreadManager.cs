@@ -31,22 +31,20 @@ public class ThreadManager : MonoBehaviour
   // call this only from the main thread
   public static void UpdateMain()
   {
-    if (!actionToExecuteOnMainThread)
+    if (actionToExecuteOnMainThread)
     {
-      return;
-    }
-    
-    executeCopiedOnMainThread.Clear();
-    lock (executeOnMainThread)
-    {
-      executeCopiedOnMainThread.AddRange(executeOnMainThread);
-      executeOnMainThread.Clear();
-      actionToExecuteOnMainThread = false;
-    }
+      executeCopiedOnMainThread.Clear();
+      lock (executeOnMainThread)
+      {
+        executeCopiedOnMainThread.AddRange(executeOnMainThread);
+        executeOnMainThread.Clear();
+        actionToExecuteOnMainThread = false;
+      }
 
-    for (int i = 0; i < executeCopiedOnMainThread.Count; i++)
-    {
-      executeCopiedOnMainThread[i]();
+      for (int i = 0; i < executeCopiedOnMainThread.Count; i++)
+      {
+        executeCopiedOnMainThread[i]();
+      }
     }
   }
 }

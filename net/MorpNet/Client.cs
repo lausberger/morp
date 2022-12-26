@@ -68,7 +68,7 @@ namespace MorpNet
         try
         {
           int _byteLength = stream.EndRead(_result);
-          if (_byteLength < 1)
+          if (_byteLength <= 0)
           {
             // TODO: disconnect
             return;

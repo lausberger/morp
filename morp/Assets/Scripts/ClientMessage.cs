@@ -12,7 +12,7 @@ public class ClientMessage : MonoBehaviour
 
   public static void WelcomeReceived()
   {
-    using (Packet _packet = new Packet((int)1))
+    using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
     {
       _packet.WriteToBuffer(Client.instance.myId);
       _packet.WriteToBuffer(UIManager.instance.usernameField.text);

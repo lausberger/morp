@@ -4,22 +4,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ServerPackets
+{
+    welcome = 1
+}
+
+public enum ClientPackets
+{
+    welcomeReceived = 1
+}
+
 public class Packet : IDisposable
 {
-  private List<byte> writableBuffer;
+  private List<byte> buffer;
   private byte[] readableBuffer;
   private int readPos;
 
   // TODO: consider constructor for int
   public Packet()
   {
-    writableBuffer = new List<byte>();
+    buffer = new List<byte>();
     readPos = 0;
   }
 
   public Packet(int _id)
   {
-    writableBuffer = new List<byte>();
+    buffer = new List<byte>();
     readPos = 0;
 
     WriteToBuffer(_id);
@@ -27,7 +37,7 @@ public class Packet : IDisposable
 
   public Packet(byte[] _data)
   {
-    writableBuffer = new List<byte>();
+    buffer = new List<byte>();
     readPos = 0;
 
     SetBytes(_data);
@@ -36,82 +46,29 @@ public class Packet : IDisposable
   public void SetBytes(byte[] _data)
   {
     WriteToBuffer(_data);
-    readableBuffer = writableBuffer.ToArray();
-  }
-
-  public void InsertInt(int _value)
-  {
-    writableBuffer.InsertRange(0, BitConverter.GetBytes(_value));
-  }
-
-  public void WriteToBuffer(byte[] _data)
-  {
-    writableBuffer.AddRange(_data);
-  }
-
-  public void WriteToBuffer(int _data)
-  {
-    writableBuffer.AddRange(BitConverter.GetBytes(_data));
-  }
-
-  // append a string size and a string to the payload
-  public void WriteToBuffer(string _data)
-  {
-    WriteToBuffer(_data.Length);
-    writableBuffer.AddRange(Encoding.ASCII.GetBytes(_data));
+    readableBuffer = buffer.ToArray();
   }
 
   // inserts the size of the payload to the start of the packet
   public void InsertLengthIndicator()
   {
-    writableBuffer.InsertRange(0, BitConverter.GetBytes(writableBuffer.Count));
+    buffer.InsertRange(0, BitConverter.GetBytes(buffer.Count));
   }
 
-  // TODO: definitions for other types
-  public byte[] ReadBytes(int _numBytes, bool _incrementReadPos = true)
+  public void InsertInt(int _value)
   {
-    AssertValidRead();
-
-    byte[] _data = writableBuffer.GetRange(readPos, _numBytes).ToArray();
-    if (_incrementReadPos)
-    {
-      readPos += _numBytes;
-    }
-    return _data;
+    buffer.InsertRange(0, BitConverter.GetBytes(_value));
   }
 
-  public int ReadInt(bool _incrementReadPos = true)
+  public byte[] ToArray()
   {
-    AssertValidRead();
-
-    int _data = BitConverter.ToInt32(readableBuffer, readPos);
-    if (_incrementReadPos)
-    {
-      readPos += 4; // length of int
-    }
-    return _data;
+    readableBuffer = buffer.ToArray();
+    return readableBuffer;
   }
 
-  // possibly need a try-catch
-  public string ReadString(bool _incrementReadPos = true)
+  public int Length()
   {
-    AssertValidRead();
-
-    int _length = ReadInt();
-    string _data = Encoding.ASCII.GetString(readableBuffer, readPos, _length);
-    if (_incrementReadPos && _data.Length > 0)
-    {
-      readPos += _length;
-    }
-    return _data;
-  }
-
-  public void AssertValidRead()
-  {
-    if (readPos > writableBuffer.Count)
-    {
-      throw new Exception("Read position exceeds buffer length");
-    }
+    return buffer.Count;
   }
 
   public int UnreadLength()
@@ -119,28 +76,178 @@ public class Packet : IDisposable
     return Length() - readPos;
   }
 
-  public byte[] ToArray()
+  public void ResetBuffer(bool _shouldReset = true)
   {
-    readableBuffer = writableBuffer.ToArray();
-    return readableBuffer;
-  }
-
-  public int Length()
-  {
-    return writableBuffer.Count;
-  }
-
-  public void ResetBuffer(bool _fullReset = true)
-  {
-    if (_fullReset)
+    if (_shouldReset)
     {
-      writableBuffer.Clear();
+      buffer.Clear();
       readableBuffer = null;
       readPos = 0;
     }
     else
     {
       readPos -= 4; // Length of an integer
+    }
+  }
+
+  public void WriteToBuffer(byte _value)
+  {
+    buffer.Add(_value);
+  }
+
+  public void WriteToBuffer(byte[] _data)
+  {
+    buffer.AddRange(_data);
+  }
+      
+  public void WriteToBuffer(int _data)
+  {
+    buffer.AddRange(BitConverter.GetBytes(_data));
+  }
+
+  public void WriteToBuffer(short _value)
+  {
+    buffer.AddRange(BitConverter.GetBytes(_value));
+  }
+
+  public void WriteToBuffer(long _value)
+  {
+    buffer.AddRange(BitConverter.GetBytes(_value));
+  }
+
+  public void WriteToBuffer(float _value)
+  {
+    buffer.AddRange(BitConverter.GetBytes(_value));
+  }
+
+  public void WriteToBuffer(bool _value)
+  {
+    buffer.AddRange(BitConverter.GetBytes(_value));
+  }
+
+  // append a string size and a string to the payload
+  public void WriteToBuffer(string _value)
+  {
+    WriteToBuffer(_value.Length);
+    buffer.AddRange(Encoding.ASCII.GetBytes(_value));
+  }
+
+  public byte ReadByte(bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    byte _value = readableBuffer[readPos];
+    if (_incrementReadPos)
+    {
+      readPos += 1;
+    }
+
+    return _value;
+  }
+
+  public byte[] ReadBytes(int _length, bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    byte[] _data = buffer.GetRange(readPos, _length).ToArray();
+    if (_incrementReadPos)
+    {
+      readPos += _length;
+    }
+
+    return _data;
+  }
+
+  public int ReadInt(bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    int _value = BitConverter.ToInt32(readableBuffer, readPos);
+    if (_incrementReadPos)
+    {
+      readPos += 4; // length of int
+    }
+    return _value;
+  }
+
+  public short ReadShort(bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    short _value = BitConverter.ToInt16(readableBuffer, readPos);
+    if (_incrementReadPos)
+    {
+      readPos += 2; // length of int
+    }
+
+    return _value;
+  }
+
+  public long ReadLong(bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    long _value = BitConverter.ToInt64(readableBuffer, readPos);
+    if (_incrementReadPos)
+    {
+      readPos += 8; // length of int
+    }
+
+    return _value;
+  }
+
+  public float ReadFloat(bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    float _value = BitConverter.ToSingle(readableBuffer, readPos);
+    if (_incrementReadPos)
+    {
+      readPos += 4; // length of int
+    }
+
+    return _value;
+  }
+
+  public bool ReadBool(bool _incrementReadPos)
+  {
+    AssertValidRead();
+
+    bool _value = BitConverter.ToBoolean(readableBuffer, readPos);
+    if (_incrementReadPos)
+    {
+      readPos += 1;
+    }
+
+    return _value;
+  }
+
+  public string ReadString(bool _incrementReadPos = true)
+  {
+    AssertValidRead();
+
+    try
+    {
+      int _length = ReadInt();
+      string _data = Encoding.ASCII.GetString(readableBuffer, readPos, _length);
+      if (_incrementReadPos && _data.Length > 0)
+      {
+        readPos += _length;
+      }
+
+      return _data;
+    }
+    catch (Exception _e)
+    {
+      throw new Exception($"Error reading string: {_e}");
+    }
+  }
+
+  public void AssertValidRead()
+  {
+    if (readPos > buffer.Count)
+    {
+      throw new Exception("Read position exceeds buffer length");
     }
   }
 
@@ -152,7 +259,7 @@ public class Packet : IDisposable
     {
       if (_disposing)
       {
-        writableBuffer = null;
+        buffer = null;
         readableBuffer = null;
         readPos = 0;
       }
