@@ -94,16 +94,12 @@ public class Client : MonoBehaviour
 		{
 			try
 			{
-				Debug.Log("start of receive callback");
 				int _byteLength = stream.EndRead(_result);
-				Debug.Log($"ended stream byte length: {_byteLength}");
 				if (_byteLength < 1)
 				{
 					// TODO: disconnect
 					return;
 				}
-
-				Debug.Log("Packet has more than 0 bytes");
 
 				byte[] _data = new byte[_byteLength];
 				Array.Copy(receiveBuffer, _data, _byteLength);
@@ -120,14 +116,12 @@ public class Client : MonoBehaviour
 
 		private bool HandleData(byte[] _data)
 		{
-			Debug.Log("handling packet data");
 			int _packetLength = 0;
 			receivedPacket.SetBytes(_data);
 
 			if (receivedPacket.UnreadLength() >= 4)
 			{
 				_packetLength = receivedPacket.ReadInt();
-				Debug.Log($"packet length: {_packetLength}");
 				if (_packetLength <= 0)
 				{
 					return true;
@@ -136,7 +130,6 @@ public class Client : MonoBehaviour
 
 			while (_packetLength > 0 && _packetLength <= receivedPacket.UnreadLength())
 			{
-				Debug.Log("looping over packet data");
 				byte[] _packetBytes = receivedPacket.ReadBytes(_packetLength);
 				ThreadManager.ExecuteOnMainThread(() => 
 				{
