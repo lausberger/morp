@@ -20,7 +20,7 @@ namespace MorpNet
 
     private static void MainThread()
     {
-      Console.WriteLine($"Main thread started. Tick rate: {Constants.TICKS_PER_SEC}");
+      Console.WriteLine($"Main thread started. Tick rate: {Constants.TICKS_PER_SEC} ticks/second.");
       DateTime _nextLoop = DateTime.Now;
 
       while (running)
