@@ -25,7 +25,7 @@ namespace MorpNet
 
       while (running)
       {
-        while (_nextLoop < DateTime.Now);
+        while (_nextLoop < DateTime.Now)
         {
           GameLogic.Update();
           
