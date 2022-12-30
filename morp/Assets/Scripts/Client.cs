@@ -18,7 +18,7 @@ public class Client : MonoBehaviour
 	private delegate void PacketHandler(Packet _packet);
 	private static Dictionary<int, PacketHandler> packetHandlers;
 
-	public void Awake()
+	private void Awake()
 	{
 		if (instance == null)
 		{
@@ -72,7 +72,7 @@ public class Client : MonoBehaviour
 
 			stream = socket.GetStream();
 			receivedPacket = new Packet();
-			stream.BeginRead(receiveBuffer, dataBufferSize, 0, ReceiveCallback, null);
+			stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 		}
 
 		public void SendPacket(Packet _packet)
