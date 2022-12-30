@@ -166,6 +166,6 @@ public class Client : MonoBehaviour
 		{
 			{ (int)ServerPackets.welcome, ClientHandle.Welcome }
 		};
-		Debug.Log("Initialized client packets.");
+		Debug.Log("Initialized client packet handlers.");
 	}
 }
