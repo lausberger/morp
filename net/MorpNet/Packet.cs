@@ -6,12 +6,14 @@ namespace MorpNet
 {
   public enum ServerPackets
   {
-      welcome = 1
+    welcome = 1,
+    udpWelcome
   }
 
   public enum ClientPackets
   {
-      welcomeReceived = 1
+    welcomeReceived = 1,
+    udpWelcomeReceived
   }
 
   public class Packet : IDisposable

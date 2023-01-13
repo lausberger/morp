@@ -19,5 +19,12 @@ namespace MorpNet
 
       // send player into game here
     }
+
+    public static void UDPWelcomeReceived(int _client, Packet _packet)
+    {
+      string _message = _packet.ReadString();
+
+      Console.WriteLine($"Received message via UDP: {_message}");
+    }
   }
 }

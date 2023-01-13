@@ -15,6 +15,7 @@ namespace MorpNet
     public static Dictionary<int, PacketHandler> packetHandlers;
 
     private static TcpListener tcpListener;
+    private static UdpClient udpListener;
 
     public static void Start(int _maxPlayers, int _port)
     {
@@ -27,6 +28,9 @@ namespace MorpNet
       tcpListener = new TcpListener(IPAddress.Any, Port);
       tcpListener.Start();
       tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
+
+      udpListener = new UdpClient(Port);
+      udpListener.BeginReceive(UDPReceiveCallback, null);
 
       Console.WriteLine($"MorpNet server started on port {Port}.");
     }
@@ -50,6 +54,61 @@ namespace MorpNet
       Console.WriteLine($"{_client.Client.RemoteEndPoint} failed to connect: Server is full.");
     }
 
+    private static void UDPReceiveCallback(IAsyncResult _result)
+    {
+      try
+      {
+        IPEndPoint _clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        byte[] _data = udpListener.EndReceive(_result, ref _clientEndPoint);
+        udpListener.BeginReceive(UDPReceiveCallback, null);
+
+        if (_data.Length < 4)
+        {
+          return;
+        }
+
+        using (Packet _packet = new Packet(_data))
+        {
+          int _clientId = _packet.ReadInt();
+
+          if (_clientId == 0)
+          {
+            return;
+          }
+
+          if (clients[_clientId].udp.endPoint == null)
+          {
+            clients[_clientId].udp.Connect(_clientEndPoint);
+            return;
+          }
+
+          if (clients[_clientId].udp.endPoint.ToString() == _clientEndPoint.ToString())
+          {
+            clients[_clientId].udp.HandleData(_packet);
+          }
+        }
+      }
+      catch (Exception _e)
+      {
+        Console.WriteLine($"Error receiving UDP data: {_e}");
+      }
+    }
+
+    public static void SendUDPPacket(IPEndPoint _clientEndPoint, Packet _packet)
+    {
+      try
+      {
+        if (_clientEndPoint != null)
+        {
+          udpListener.BeginSend(_packet.ToArray(), _packet.Length(), _clientEndPoint, null, null);
+        }
+      }
+      catch (Exception _e)
+      {
+        Console.WriteLine($"Error sending data to {_clientEndPoint} via UDP: {_e}");
+      }
+    }
+
     private static void InitializeServerData()
     {
       for (int i = 1; i <= MaxPlayers; i++)
@@ -59,7 +118,8 @@ namespace MorpNet
 
       packetHandlers = new Dictionary<int, PacketHandler>()
       {
-        { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived }
+        { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+        { (int)ClientPackets.udpWelcomeReceived, ServerHandle.UDPWelcomeReceived }
       };
       Console.WriteLine("Initialized server packet handlers.");
     }
